@@ -24,9 +24,6 @@ ap.add_argument("--image-format", dest="image_format", type=str, default="jpg",
 ap.add_argument("--mask-format", dest="mask_format", type=str, default="png",
                 help="mask format, defaults to png")
 
-ap.add_argument("--keep-original", dest="keep_original", action="store_true",
-                help="keep the original images after storing them into corresponding folders")
-
 
 args = vars(ap.parse_args())
 
@@ -41,9 +38,6 @@ OUTPUT_IMAGE_PATH = OUTPUT_DATA_PATH+'/images'
 OUTPUT_MASK_PATH = OUTPUT_DATA_PATH+'/annotations'
 IMAGE_FORMAT = '.' + args["image_format"]
 MASK_FORMAT = '.' + args["mask_format"]
-
-# Remove duplicates after adding them to train/val folders
-keep_old_images = args["keep_original"]
 
 # Get all images and masks, sort them and shuffle them to generate data sets.
 
@@ -107,20 +101,12 @@ def add_images(dir_name, image):
     img = img.convert("RGB")
     img.save(OUTPUT_IMAGE_PATH+'/{}'.format(dir_name)+'/'+image+IMAGE_FORMAT)
 
-    if not keep_old_images:
-        os.remove(full_image_path)
-
-
 def add_masks(dir_name, image):
 
     full_mask_path = INPUT_MASK_PATH+'/'+image+MASK_FORMAT
     img = Image.open(full_mask_path)
 
     img.save(OUTPUT_MASK_PATH+'/{}'.format(dir_name)+'/'+image+MASK_FORMAT)
-
-    if not keep_old_images:
-        os.remove(full_mask_path)
-
 
 image_folders = [(train_images, train_folder), (val_images, val_folder)]
 
